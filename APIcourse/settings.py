@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'APIcourse.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'db_name',
+        'NAME': 'production_db',
         'USER': 'postgres',
         'PASSWORD': 'password',
         'HOST': '127.0.0.1',
@@ -123,9 +123,33 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
+LOGIN_URL = '/login'
+
+# Assigning Media root to server or local machine
+MEDIA_URL = '/media/'
+#MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_URL = '/static/'
+
+# Media in S3 bucket
+#DEFAULT_FILE_STORAGE = 'TodoProj.storage_backends.MediaStorage' #the media storage configurations
+#AWS_S3_REGION_NAME = 'eu-west-1'
+
+#AWS_ACCESS_KEY_ID = 'aaa'
+#AWS_SECRET_ACCESS_KEY = 'aaa'
+
+#AWS_STORAGE_BUCKET_NAME = 'aaa'
+#AWS_S3_CUSTOM_DOMAIN = 'aaa'
+
+#AWS_LOCATION = 'static'
+#STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+#STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+try:
+    from .local_settings import *
+except ImportError:
+    print("Looks like no local file. You must be on production or staging")
