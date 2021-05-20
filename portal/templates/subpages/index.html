@@ -1,10 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-Hi
-</body>
-</html>
+{% extends "main/base.html" %}
+
+{% block content %}
+<p>Go To <a href="{% url 'apisApp:home' %}">API page</a> </p>
+{% endblock %}
