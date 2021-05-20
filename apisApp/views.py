@@ -6,6 +6,7 @@ from .serializers import PostSerializer
 # Require to to pass the generics and import it
 
 def home(request):
+    #return render(request, 'index.html', {'content':PassTheObjectHere})
     return HttpResponse('Add view URL after api/ to access the API such as <a href=posts>Posts</a>')
 
 class PostList(generics.ListAPIView):
