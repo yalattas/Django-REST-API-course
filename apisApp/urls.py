@@ -9,4 +9,7 @@ app_name = 'apisApp'
 urlpatterns = [
     path('', views.home, name='home'),
     path('posts/', views.PostList.as_view(), name='postsPath'),
+    path('posts/<int:pk>/vote', views.VoteCreate.as_view(), name='AddVote'),
+
+    path('votes/', views.VoteList.as_view(), name='votesPath'),
 ]

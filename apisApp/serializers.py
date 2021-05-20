@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 # Import models that you need to seralize in order to pass it to different systems
-from .models import Post
+from .models import Post, Vote
 
 class PostSerializer(serializers.ModelSerializer):
     # To prevent updating it via the API, only reading. Purpose: to prevent user from update another user data
@@ -13,3 +13,14 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         # What fields should be accessible by third-party app, author_id coming from the top
         fields = ['id', 'title', 'url', 'author', 'author_id', 'created_at']
+
+class VoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vote
+        fields = ['id']
+
+class VoteListSerializer(serializers.ModelSerializer):
+    PostTitle = serializers.ReadOnlyField(source='post.title')
+    class Meta:
+        model = Vote
+        fields = ['id', 'voter', 'post', 'PostTitle', 'created_at']
