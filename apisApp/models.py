@@ -8,7 +8,7 @@ class Post (models.Model):
     )
     url = models.URLField()
     # Require User model to be imported
-    auther = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     # To take current time and submit it
     created_at = models.DateTimeField(auto_now_add=True)
 
