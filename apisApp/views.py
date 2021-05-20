@@ -10,8 +10,8 @@ def home(request):
     return HttpResponse('Add view URL after api/ to access the API such as <a href=posts>Posts</a>')
 
 class PostList(generics.ListAPIView):
-    # What objects you want to retrieve
+    # What objects you want to retrieve, Django automatically identify "queryset" variable and include it.
     queryset = Post.objects.all()
     # You must associate the serializer built for that model
-    # You need to import it
+    # Django automatically identify "serializer_class" variable and include it.
     serializer_class = PostSerializer
