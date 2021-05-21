@@ -34,7 +34,7 @@ class PostList(generics.ListCreateAPIView):
         # This will identify the user id with the API to associate it. As we prevent user from passing the user ID manually before
         serializer.save(author_id=self.request.user.id)
 
-class PostRetrieveDestroy(generics.RetrieveDestroyAPIView):
+class PostRetrieveDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
