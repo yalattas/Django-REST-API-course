@@ -1,6 +1,8 @@
 from django.shortcuts import render, HttpResponse
-from rest_framework import generics, permissions
+# generics & permissions are necessary to call apis with auth. mixins is to delete object via api instead of calling destroy
+from rest_framework import generics, permissions, mixins, status
 from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
 from .models import Post, Vote
 from .serializers import PostSerializer, VoteSerializer, VoteListSerializer
 
@@ -32,10 +34,27 @@ class PostList(generics.ListCreateAPIView):
         # This will identify the user id with the API to associate it. As we prevent user from passing the user ID manually before
         serializer.save(author_id=self.request.user.id)
 
-class VoteCreate(generics.CreateAPIView):
+class PostRetrieveDestroy(generics.RetrieveDestroyAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def delete(self, request, *args, **kwargs):
+        # To retrieve the owner of the post and prevent anyone else from deleting it
+        post = Post.objects.filter(pk=self.kwargs['pk'], author=self.request.user)
+        # Check if the post actually exist or not
+        if post.exists():
+            # if exist and belongs to the signed in user. Then it will be deleted
+            return self.destroy(request, *args, **kwargs)
+        else:
+            # if other user attempt to delete post for another user
+            raise ValidationError('This isn\'t your post to delete')
+
+# mixins require importion at the top. purpose: to delete object
+class VoteCreate(generics.CreateAPIView, mixins.DestroyModelMixin):
     serializer_class = VoteSerializer
     permission_classes = [permissions.IsAuthenticated]
-
+    # Each def is a function
     def get_queryset(self):
         # To know who is the user who is trying to vote for a post
         user = self.request.user
@@ -51,6 +70,15 @@ class VoteCreate(generics.CreateAPIView):
             raise ValidationError('You have voted to this Post already :)')
         # This will identify who is the user/voter (different than owner/author) and which post he is in
         serializer.save(voter=self.request.user, post=Post.objects.get(pk=self.kwargs['pk']))
+
+    # to prevent user from delete an object that doesn't exist
+    def delete(self, request, *args, **kwargs):
+        if self.get_queryset().exists():
+            self.get_queryset().delete()
+            # to return a message to user, require to be imported for both Response & status
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            raise ValidationError('You never voted for this post')
 
 class VoteList(generics.ListCreateAPIView):
     queryset = Vote.objects.all()
